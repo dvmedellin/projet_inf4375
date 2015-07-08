@@ -55,10 +55,11 @@ JSON_SCHEMA = {
 def main():
     print('Starting...')
    
-    es = Elasticsearch()
+    es = Elasticsearch([{'host':'localhost','port':'9200'}])
     create_index(es,'contracts')   
    
     for file in CSV_FILES :
+        print('reading file {}'.format(file))
         rows_dict = readcsv(file)
         json_file = tojson(rows_dict)
         insert_data(es,'contracts', json_file)
@@ -79,6 +80,7 @@ def readcsv(file):
    
     hdr=hdr.replace('\n', '').replace('\r','').replace('\t', '')
     hdr=hdr.replace("DATE D'APPROBATION","DATE").replace("DATE SIGNATURE","DATE").replace("NOM DU FOURNISSEUR","FOURNISSEUR").replace("NUMÉRO","NO DE DOSSIER").replace("OBJET","DESCRIPTION")
+    hdr=hdr.replace("PORTION À LA CHARGE DE L'AGGLO.","RÉPARTITION")
     colname = hdr.split(SEP)
     colname = [item.strip('"') for item in colname]
    
@@ -127,7 +129,7 @@ def tojson(row_dict):
     try:         
         json.dump(row_dict,json_bufr, ensure_ascii=False)
     except:
-        print('WARNING : Line {} does not match json schema. Ignored'.format(row))   
+        print('WARNING : Could not put information to a json format. File ignored')   
     return json_bufr
 
 #insert information into elasticsearch
