@@ -134,13 +134,17 @@ def tojson(row_dict):
 
 #insert information into elasticsearch
 def insert_data(es,name,json_file):
+    properties = {}
+    for k in COL_NAMES: 
+        properties[k]= {'type':'string'}
+    json_schema = {'type':'object', 'properties': properties}
     contract_list = json.loads(json_file.getvalue())
     for contract in contract_list:
-        #try:
-        validate(contract, JSON_SCHEMA)
-        es.index(index='contracts', body=contract,  doc_type='contract')
-        #except:
-            #print('WARNING : Format not valid. Ignoring contract {}'.format(contract))
+        try:
+            validate(contract, JSON_SCHEMA)
+            es.index(index='contracts', body=contract,  doc_type='contract')
+        except:
+            print('WARNING : Format not valid. Ignoring contract {}'.format(contract))
 
 #create index in Elasticsearh server. if it already exists destroy it before recreating it
 def create_index(es,name) :
