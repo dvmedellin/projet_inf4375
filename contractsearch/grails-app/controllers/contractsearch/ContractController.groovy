@@ -2,7 +2,7 @@ package contractsearch
 
 class ContractController {
 
-    def index() { 
+    def index() {
         render(Contract.list() as grails.converters.JSON)
     }
 }
