@@ -47,6 +47,7 @@ def main():
         json_file = tojson(rows_dict)
         insert_data(es,'contracts', json_file)
     print('Finished')
+    return(0) 
 #end of main
 
 def readcsv(file):
